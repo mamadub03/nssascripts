@@ -42,3 +42,8 @@ echo "=== Automated setup complete ==="
 echo "Now create these DNS CNAMEs on Windows Server:"
 echo "site1.yourID.com → rockyclient.yourID.com"
 echo "site2.yourID.com → rockyclient.yourID.com"
+
+#use this to unblock fire walls
+#sudo firewall-cmd --add-service=http --permanent
+#sudo firewall-cmd --reload
+
