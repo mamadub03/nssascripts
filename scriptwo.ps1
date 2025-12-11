@@ -3,7 +3,7 @@
 # Configure DHCP scope + options
 # Create User1 + User2
 # =========================
-
+# Dont forget to add lokkup zones by DNS → winserv2022 → Forward Lookup Zones → <yourID>.com and right click
 $DomainName = "mbb1324.com"  
 $ServerIP   = "192.168.10.2"
 $Gateway    = "192.168.10.254"
