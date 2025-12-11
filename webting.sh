@@ -1,49 +1,54 @@
 #!/bin/bash
+# Lab 2 – Activity A – Part 1 (Tasks 1–5)
+# This script does:
+# 1) Install Apache
+# 2) Create index.html in a non-default directory (/customsite)
+# 3) Point httpd.conf DocumentRoot to /customsite
+# You will then manually:
+# 4) Show the site locally (http://localhost)
+# 5) Show the site remotely from Windows 10 using Rocky's IP
 
-echo "=== Installing Apache ==="
-dnf install httpd -y
+echo "=== Lab 2 Activity A – Part 1 (Tasks 1–3) ==="
+
+# Task 1 – Install Apache
+echo "=== [1] Installing Apache (httpd) ==="
+dnf install -y httpd
+
+echo "=== Enabling and starting httpd ==="
 systemctl enable --now httpd
 
-echo "=== Creating first site directory ==="
+# Task 2 – index.html in non-default directory
+echo "=== [2] Creating /customsite and index.html ==="
 mkdir -p /customsite
-echo "<h1>NSSA Rocky Site (no not the movie!)</h1>" > /customsite/index.html
+echo "<h1>Main NSSA Rocky Site</h1>" > /customsite/index.html
 
-echo "=== Updating httpd.conf to use /customsite as DocumentRoot ==="
-sed -i 's|DocumentRoot "/var/www/html"|DocumentRoot "/customsite"|' /etc/httpd/conf/httpd.conf
-sed -i 's|<Directory "/var/www">|<Directory "/customsite">|' /etc/httpd/conf/httpd.conf
+# Task 3 – Update httpd.conf to use /customsite as DocumentRoot
+HTTPD_CONF="/etc/httpd/conf/httpd.conf"
 
-# Ensure Directory block is present
-grep -q '/customsite' /etc/httpd/conf/httpd.conf || cat <<EOF >> /etc/httpd/conf/httpd.conf
+echo "=== [3] Updating ${HTTPD_CONF} to use /customsite as DocumentRoot ==="
+sed -i 's|DocumentRoot "/var/www/html"|DocumentRoot "/customsite"|' "$HTTPD_CONF"
+sed -i 's|<Directory \"/var/www\">|<Directory \"/customsite\">|' "$HTTPD_CONF"
+
+# Make sure /customsite has an access block (in case the default was different)
+if ! grep -q 'Directory "/customsite"' "$HTTPD_CONF"; then
+  cat <<EOF >> "$HTTPD_CONF"
 
 <Directory "/customsite">
     AllowOverride None
     Require all granted
 </Directory>
 EOF
-
-echo "=== Creating second virtual host (site2) ==="
-mkdir -p /secondsite
-echo "<h1>Second Website</h1>" > /secondsite/index.html
-
-cat <<EOF > /etc/httpd/conf.d/secondsite.conf
-<VirtualHost *:80>
-    ServerName site2.yourID.com
-    DocumentRoot /secondsite
-    <Directory /secondsite>
-        Require all granted
-    </Directory>
-</VirtualHost>
-EOF
+fi
 
 echo "=== Restarting Apache ==="
 systemctl restart httpd
 
-echo "=== Automated setup complete ==="
-echo "Now create these DNS CNAMEs on Windows Server:"
-echo "site1.yourID.com → rockyclient.yourID.com"
-echo "site2.yourID.com → rockyclient.yourID.com"
+echo
+echo "=== Script finished – Tasks 1–3 are done. ==="
+echo "Now do:"
+echo "  Task 4: On Rocky, open http://localhost and show the page."
+echo "  Task 5: From Windows 10, open http://<Rocky_IP> and show the page."
 
 #use this to unblock fire walls
 #sudo firewall-cmd --add-service=http --permanent
 #sudo firewall-cmd --reload
-
