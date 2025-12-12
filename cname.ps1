@@ -3,7 +3,7 @@
 
 $RitId  = "mbb1324"              # <-- change if your RIT ID is different
 $Zone   = "$RitId.com"           # e.g. mbb1324.com
-$Target = "rocky.$Zone"    # must already have an A-record for this
+$Target = "rockyclient.$Zone"    # must already have an A-record for this
 
 Write-Host "Creating CNAME records in zone $Zone pointing to $Target" -ForegroundColor Cyan
 
